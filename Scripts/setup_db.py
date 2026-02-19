@@ -5,6 +5,7 @@
 # 5 insert .csv
 # 6 Clean up and print "all done"
 
+import csv
 import os
 
 import mysql.connector
@@ -12,6 +13,110 @@ from dotenv import load_dotenv
 from mysql.connector import Error
 
 load_dotenv()
+
+
+def clean_val(val):
+    if val == "\\N" or val == "" or val is None:
+        return None
+    return val
+
+
+def insert_csv_data(cursor, F1_DB):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(os.path.dirname(current_dir), "Data")
+
+    TABLE_MAP = {
+        "circuits": [
+            "circuitId",
+            "circuitRef",
+            "name",
+            "location",
+            "country",
+            "lat",
+            "lng",
+            "alt",
+        ],
+        "drivers": [
+            "driverId",
+            "driverRef",
+            "number",
+            "code",
+            "forename",
+            "surname",
+            "dob",
+            "nationality",
+        ],
+        "constructors": ["constructorId", "constructorRef", "name", "nationality"],
+        "status": ["statusId", "status"],
+        "races": ["raceId", "year", "round", "circuitId", "name", "date", "time"],
+        "lap_times": ["raceId", "driverId", "lap", "position", "time", "milliseconds"],
+        "pit_stops": ["raceId", "driverId", "stop", "lap", "time", "duration"],
+        "qualifying": [
+            "qualifyId",
+            "raceId",
+            "driverId",
+            "constructorId",
+            "number",
+            "position",
+            "q1",
+            "q2",
+            "q3",
+        ],
+        "results": [
+            "resultId",
+            "raceId",
+            "driverId",
+            "constructorId",
+            "statusId",
+            "number",
+            "grid",
+            "position",
+            "points",
+            "laps",
+            "time",
+            "fastestLap",
+        ],
+    }
+
+    insertion_order = [
+        "circuits",
+        "drivers",
+        "constructors",
+        "status",  #
+        "races",  #
+        "lap_times",
+        "pit_stops",
+        "qualifying",
+        "results",  #
+    ]
+
+    for table in insertion_order:
+        csv_file_path = os.path.join(data_dir, f"{table}.csv")
+        columns_to_keep = TABLE_MAP[table]
+
+        placeholder = ", ".join(["%s"] * len(columns_to_keep))
+        column_names = ",".join(columns_to_keep)
+        sql = f"INSERT IGNORE INTO {table} ({column_names}) VALUES ({placeholder})"
+        data_to_insert = []
+        try:
+            with open(csv_file_path, mode="r", encoding="utf-8") as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    clean_row = tuple(
+                        clean_val(row.get(col)) for col in columns_to_keep
+                    )
+                    data_to_insert.append(clean_row)
+            print(f"Inserting {len(data_to_insert)} into '{table}'")
+
+            chunk_size = 10000
+            for i in range(0, len(data_to_insert), chunk_size):
+                cursor.executemany(sql, data_to_insert[i : i + chunk_size])
+            F1_DB.commit()
+            print(f"Done with '{table}'")
+        except FileNotFoundError:
+            print(f"CSV file not found: {csv_file_path}")
+        except Exception as e:
+            print(f"Error while inserting into {table}: {e}")
 
 
 def test_connection():
@@ -162,9 +267,14 @@ def test_connection():
         except Error as e:
             print(f"Error while creating table: {table_name}: {e}")
 
+    # 5
+    insert_csv_data(cursor, F1_DB)
+
+    # 6
     F1_DB.commit()
     cursor.close()
     F1_DB.close()
+    print("All done!")
 
 
 if __name__ == "__main__":
