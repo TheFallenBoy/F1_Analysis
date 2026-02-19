@@ -2,57 +2,48 @@ import os
 
 
 def main():
+    choices = {
+                "1" : fastest_average_pit_stop,
+                "2" : won_most_races,
+                "3" : most_wins_driver,
+                "4" : avg_pit_stop_time,
+                "5" : add_pit_stop_time,
+                "6" : total_championship_points,
+            }
+
+
     while True:
         os.system('clear')
-        print("Please enter a number:")
-        print("1.")
-        print("2.")
-        print("3.")
-        print("4.")
-        print("5.")
-        print("6.")
-        print("7.")
-        print("8.")
-        print("9.")
-        print("0. Exit")
+        print("""Please enter a number:\n1.\n2.\n3.\n4.\n5.\n6.\n0.\n""")
         choice = input()
-        if not choice.isnumeric():
-            print("Invalid Input")
-            print("Press Enter to continue")
-            input()
-            continue
-        choice = int(choice)
-        if choice == 1:
-            print("choice 1")
-        elif choice == 2:
-            print("choice 2")
-        elif choice == 3:
-            print("choice 3")
-        elif choice == 4:
-            print("choice 4")
-        elif choice == 5:
-            print("choice 5")
-        elif choice == 6:
-            print("choice 6")
-        elif choice == 7:
-            print("choice 7")
-        elif choice == 8:
-            print("choice 8")
-        elif choice == 9:
-            print("choice 9")
-        elif choice == 0:
-            print("Exiting program...")
+        if choice.isnumeric() and int(choice) == 0:
             break
+        if choice in choices:
+            choices[choice]()
         else:
-            print("invalid choice")
-        
-
+            print("Invalid input")
         print("Press Enter to continue")
         input()
 
 
 
+def fastest_average_pit_stop():
+    print("fastest average pit stop")
 
+def won_most_races():
+    print("most_races")
+
+def most_wins_driver():
+    print("most_wins")
+
+def avg_pit_stop_time():
+    print("avg pit stop")
+
+def add_pit_stop_time():
+    print("pit stop time")
+
+def total_championship_points():
+    print("constructor")
 
 
 
