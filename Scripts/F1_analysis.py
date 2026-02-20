@@ -57,15 +57,14 @@ def fastest_average_pit_stop(db: MySQLConnectionAbstract | PooledMySQLConnection
 def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):
     year1 = None
     year2 = None
-    while(True):  
+    while True:
         year1 = input("From: ")
         year2 = input("To: ")
         if not year1.isnumeric() or not year2.isnumeric():
             continue
 
-        if int(year1) in range(1950,2024) and int(year2) in range(1950,2024):
+        if int(year1) in range(1950, 2024) and int(year2) in range(1950, 2024):
             break
-    
 
     sql = f"""SELECT constructors.name as constructor, count(results.resultId) as TotalWins 
 FROM results
@@ -100,6 +99,7 @@ def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query
     cursor = db.cursor()
     cursor.execute(query)
     return cursor.fetchall()
+
 
 def execute_fetch_one(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str):
     cursor = db.cursor()
