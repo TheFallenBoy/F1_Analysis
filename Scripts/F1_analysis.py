@@ -5,24 +5,28 @@ from dotenv import load_dotenv
 from mysql.connector import *
 from mysql.connector.abstracts import *
 from mysql.connector.pooling import PooledMySQLConnection
+
+
 def main():
     load_dotenv()
     choices = {
-                "1" : fastest_average_pit_stop,
-                "2" : won_most_races,
-                "3" : most_wins_driver,
-                "4" : avg_pit_stop_time,
-                "5" : add_pit_stop_time,
-                "6" : total_championship_points,
-            }
-
+        "1": fastest_average_pit_stop,
+        "2": won_most_races,
+        "3": most_wins_driver,
+        "4": avg_pit_stop_time,
+        "5": add_pit_stop_time,
+        "6": total_championship_points,
+    }
 
     db = connect()
 
-
     while True:
-        os.system('clear') #need to be able to run on windows aswell, right now it's only available on linux
-        print("""Please enter a number:\n1.Who has the fastest average pit stop?\n2.\n3.\n4.\n5.\n6.\n0.\n""")
+        os.system(
+            "clear"
+        )  # need to be able to run on windows aswell, right now it's only available on linux
+        print(
+            """Please enter a number:\n1.Who has the fastest average pit stop?\n2.\n3.\n4.\n5.\n6.\n0.\n"""
+        )
         choice = input()
         if choice.isnumeric() and int(choice) == 0:
             break
@@ -34,44 +38,55 @@ def main():
         input()
 
 
-
-def connect() -> MySQLConnectionAbstract | PooledMySQLConnection: 
+def connect() -> MySQLConnectionAbstract | PooledMySQLConnection:
     db = mysql.connector.connect(
-            host = os.getenv("DB_HOST"),
-            port = os.getenv("DB_PORT"),
-            user = os.getenv("DB_USER"),
-            password = os.getenv("DB_PASSWORD"), 
-            )
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+    )
     db.cursor().execute("USE F1_DB")
 
     return db
 
 
+def fastest_average_pit_stop(db: MySQLConnectionAbstract | PooledMySQLConnection):
+    query: str = ""
 
 
-
-def fastest_average_pit_stop(db : MySQLConnectionAbstract | PooledMySQLConnection):
-    query : str = ""
-def won_most_races(db : MySQLConnectionAbstract | PooledMySQLConnection):
+def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):
+    sql = """SELECT constructors.name as constructor, count(results.resultId) as TotalWins 
+FROM results
+JOIN races ON results.raceId = races.raceId
+JOIN constructors ON constructors.constructorId = results.constructorId
+WHERE results.position = 1
+AND races.year between 2020 AND 2020
+GROUP BY constructors.name
+ORDER BY TotalWins DESC
+LIMIT 1"""
     print("most_races")
 
-def most_wins_driver(db : MySQLConnectionAbstract | PooledMySQLConnection):
+
+def most_wins_driver(db: MySQLConnectionAbstract | PooledMySQLConnection):
     print("most_wins")
 
-def avg_pit_stop_time(db : MySQLConnectionAbstract | PooledMySQLConnection):
+
+def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):
     print("avg pit stop")
 
-def add_pit_stop_time(db : MySQLConnectionAbstract| PooledMySQLConnection):
+
+def add_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):
     print("pit stop time")
 
-def total_championship_points(db : MySQLConnectionAbstract| PooledMySQLConnection):
+
+def total_championship_points(db: MySQLConnectionAbstract | PooledMySQLConnection):
     print("constructor")
 
-def execute_sql_query(db : MySQLConnectionAbstract | PooledMySQLConnection, query : str):
+
+def execute_sql_query(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str):
     db.cursor().execute(query)
     return db.cursor().fetchall()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
