@@ -1,4 +1,3 @@
-import os
 
 import mysql.connector
 from dotenv import load_dotenv
@@ -7,6 +6,7 @@ from mysql.connector.abstracts import *
 from mysql.connector.pooling import PooledMySQLConnection
 
 
+import os
 def main():
     load_dotenv()
     choices = {
