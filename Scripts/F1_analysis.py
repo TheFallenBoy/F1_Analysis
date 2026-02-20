@@ -55,16 +55,29 @@ def fastest_average_pit_stop(db: MySQLConnectionAbstract | PooledMySQLConnection
 
 
 def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):
-    sql = """SELECT constructors.name as constructor, count(results.resultId) as TotalWins 
+    year1 = None
+    year2 = None
+    while(True):  
+        year1 = input("From: ")
+        year2 = input("To: ")
+        if not year1.isnumeric() or not year2.isnumeric():
+            continue
+
+        if int(year1) in range(1950,2024) and int(year2) in range(1950,2024):
+            break
+    
+
+    sql = f"""SELECT constructors.name as constructor, count(results.resultId) as TotalWins 
 FROM results
 JOIN races ON results.raceId = races.raceId
 JOIN constructors ON constructors.constructorId = results.constructorId
 WHERE results.position = 1
-AND races.year between 2020 AND 2020
+AND races.year between {year1} AND {year2} 
 GROUP BY constructors.name
 ORDER BY TotalWins DESC
 LIMIT 1"""
-    print("most_races")
+    response = execute_fetch_one(db, sql)
+    print(response)
 
 
 def most_wins_driver(db: MySQLConnectionAbstract | PooledMySQLConnection):
@@ -83,9 +96,15 @@ def total_championship_points(db: MySQLConnectionAbstract | PooledMySQLConnectio
     print("constructor")
 
 
-def execute_sql_query(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str):
-    db.cursor().execute(query)
-    return db.cursor().fetchall()
+def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str):
+    cursor = db.cursor()
+    cursor.execute(query)
+    return cursor.fetchall()
+
+def execute_fetch_one(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str):
+    cursor = db.cursor()
+    cursor.execute(query)
+    return cursor.fetchone()
 
 
 if __name__ == "__main__":
