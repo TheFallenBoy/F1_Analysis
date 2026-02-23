@@ -1,12 +1,11 @@
+import os
 
 import mysql.connector
 from dotenv import load_dotenv
-from mysql.connector import *
-from mysql.connector.abstracts import *
+from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
 
 
-import os
 def main():
     load_dotenv()
     choices = {
@@ -50,11 +49,18 @@ def connect() -> MySQLConnectionAbstract | PooledMySQLConnection:
     return db
 
 
-def fastest_average_pit_stop(db: MySQLConnectionAbstract | PooledMySQLConnection):
-    query: str = ""
+# TODO: Make query
+# 1. What team has the fastest average pit stop?
+def fastest_average_pit_stop(
+    db: MySQLConnectionAbstract | PooledMySQLConnection,
+):  # Jonathan
+    sql = ""
+    response = execute_fetch_one(db, sql)
+    print(response)
 
 
-def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):
+# 2. What team has won the most races between year x and y
+def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jonathan
     year1 = None
     year2 = None
     while True:
@@ -66,33 +72,47 @@ def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):
         if int(year1) in range(1950, 2024) and int(year2) in range(1950, 2024):
             break
 
-    sql = f"""SELECT constructors.name as constructor, count(results.resultId) as TotalWins 
-FROM results
-JOIN races ON results.raceId = races.raceId
-JOIN constructors ON constructors.constructorId = results.constructorId
-WHERE results.position = 1
-AND races.year between {year1} AND {year2} 
-GROUP BY constructors.name
-ORDER BY TotalWins DESC
-LIMIT 1"""
+    sql = f"""SELECT constructors.name as constructor, count(results.resultId) as TotalWins
+    FROM results
+    JOIN races ON results.raceId = races.raceId
+    JOIN constructors ON constructors.constructorId = results.constructorId
+    WHERE results.position = 1
+    AND races.year between {year1} AND {year2} 
+    GROUP BY constructors.name
+    ORDER BY TotalWins DESC
+    LIMIT 1"""
+    response = execute_fetch_one(db, sql)
+    print(response)  # TODO: fix a better printout
+
+
+# TODO: Make query
+def most_wins_driver(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
+    sql = ""
     response = execute_fetch_one(db, sql)
     print(response)
 
 
-def most_wins_driver(db: MySQLConnectionAbstract | PooledMySQLConnection):
-    print("most_wins")
+# TODO: Make query
+def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jonathan
+    sql = ""
+    response = execute_fetch_one(db, sql)
+    print(response)
 
 
-def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):
-    print("avg pit stop")
+# TODO: Make query
+def add_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
+    sql = ""
+    response = execute_fetch_one(db, sql)
+    print(response)
 
 
-def add_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):
-    print("pit stop time")
-
-
-def total_championship_points(db: MySQLConnectionAbstract | PooledMySQLConnection):
-    print("constructor")
+# TODO: Make query
+def total_championship_points(
+    db: MySQLConnectionAbstract | PooledMySQLConnection,
+):  # Elias
+    sql = ""
+    response = execute_fetch_one(db, sql)
+    print(response)
 
 
 def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str):
