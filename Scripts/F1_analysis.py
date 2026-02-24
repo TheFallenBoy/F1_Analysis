@@ -84,11 +84,17 @@ def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jona
     response = execute_fetch_one(db, sql)
     print(response)  # TODO: fix a better printout
 
-
 # TODO: Make query
 def most_wins_driver(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
-    sql = ""
-    response = execute_fetch_one(db, sql)
+    sql = """SELECT results.driverId, drivers.forename, drivers.surname, COUNT(results.driverId) AS TotalWins
+FROM results
+INNER JOIN drivers
+ON drivers.driverId = results.driverId
+WHERE results.position = 1
+GROUP BY results.driverId
+ORDER BY TotalWins DESC
+LIMIT 5;"""
+    response = execute_fetch_all(db, sql)
     print(response)
 
 
@@ -107,9 +113,7 @@ def add_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # E
 
 
 # TODO: Make query
-def total_championship_points(
-    db: MySQLConnectionAbstract | PooledMySQLConnection,
-):  # Elias
+def total_championship_points(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     sql = ""
     response = execute_fetch_one(db, sql)
     print(response)
