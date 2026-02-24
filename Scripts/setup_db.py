@@ -141,7 +141,7 @@ def test_connection():
 
     TABLES["circuits"] = (
         "CREATE TABLE IF NOT EXISTS circuits ("
-        "  circuitId INT PRIMARY KEY,"
+        "  circuitId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  circuitRef VARCHAR(255),"
         "  name VARCHAR(255),"
         "  location VARCHAR(255),"
@@ -154,7 +154,7 @@ def test_connection():
 
     TABLES["drivers"] = (
         "CREATE TABLE IF NOT EXISTS drivers ("
-        "  driverId INT PRIMARY KEY,"
+        "  driverId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  driverRef VARCHAR(255),"
         "  number VARCHAR(255),"
         "  code VARCHAR(255),"
@@ -167,7 +167,7 @@ def test_connection():
 
     TABLES["constructors"] = (
         "CREATE TABLE IF NOT EXISTS constructors ("
-        "  constructorId INT PRIMARY KEY,"
+        "  constructorId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  constructorRef VARCHAR(255),"
         "  name VARCHAR(255),"
         "  nationality VARCHAR(255)"
@@ -176,14 +176,14 @@ def test_connection():
 
     TABLES["status"] = (
         "CREATE TABLE IF NOT EXISTS status ("
-        "  statusId INT PRIMARY KEY,"
+        "  statusId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  status VARCHAR(255)"
         ")"
     )
 
     TABLES["races"] = (
         "CREATE TABLE IF NOT EXISTS races ("
-        "  raceId INT PRIMARY KEY,"
+        "  raceId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  year INT,"
         "  round INT,"
         "  circuitId INT,"
@@ -224,7 +224,7 @@ def test_connection():
 
     TABLES["qualifying"] = (
         "CREATE TABLE IF NOT EXISTS qualifying ("
-        "  qualifyId INT PRIMARY KEY,"
+        "  qualifyId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  raceId INT,"
         "  driverId INT,"
         "  constructorId INT,"
@@ -241,7 +241,7 @@ def test_connection():
 
     TABLES["results"] = (
         "CREATE TABLE IF NOT EXISTS results ("
-        "  resultId INT PRIMARY KEY,"
+        "  resultId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  raceId INT,"
         "  driverId INT,"
         "  constructorId INT,"
