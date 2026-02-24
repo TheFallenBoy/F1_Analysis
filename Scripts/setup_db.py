@@ -110,9 +110,7 @@ def insert_csv_data(cursor, F1_DB):
             with open(csv_file_path, mode="r", encoding="utf-8") as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-                    clean_row = tuple(
-                        clean_val(row.get(col)) for col in columns_to_keep
-                    )
+                    clean_row = tuple(clean_val(row.get(col)) for col in columns_to_keep)
                     data_to_insert.append(clean_row)
             print(f"Inserting {len(data_to_insert)} into '{table}'")
 
