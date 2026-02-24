@@ -24,7 +24,9 @@ def main():
 
     while True:
         os.system("clear")  # need to be able to run on windows as well, right now it's only available on Linux
-        print("""Please enter a number:\n1.Who has the fastest average pit stop?\n2.\n3.\n4.\n5.\n6.\n0.\n""")
+        print(
+            """Please enter a number:\n1. What constructor has the fastest average pit stop (2011 - 2024)?\n2. What constructor has won the most races between year x and y? \n3. Top 5 drivers (most won races)\n4. Pit lane time over the years 2011 - 2024\n5.\n6.\n0. Exit\n"""
+        )
         choice = input()
         if choice.isnumeric() and int(choice) == 0:
             break
