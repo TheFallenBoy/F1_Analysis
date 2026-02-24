@@ -1,4 +1,4 @@
-1. What team has the fastest average pit stop?
+1. What team has the fastest average pit lane time?
 2. What team has won the most races between year x and y
 3. What driver has the most total wins?
 4. How have the pit stop time decrease over the years? (open up a diagram showing a graph.)
