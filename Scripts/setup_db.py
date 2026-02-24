@@ -50,7 +50,15 @@ def insert_csv_data(cursor, F1_DB):
         "status": ["statusId", "status"],
         "races": ["raceId", "year", "round", "circuitId", "name", "date", "time"],
         "lap_times": ["raceId", "driverId", "lap", "position", "time", "milliseconds"],
-        "pit_stops": ["raceId", "driverId", "stop", "lap", "time", "duration"],
+        "pit_stops": [
+            "raceId",
+            "driverId",
+            "stop",
+            "lap",
+            "time",
+            "duration",
+            "milliseconds",
+        ],
         "qualifying": [
             "qualifyId",
             "raceId",
@@ -216,6 +224,7 @@ def test_connection():
         "  lap INT,"
         "  time TIME,"
         "  duration VARCHAR(255),"
+        "  milliseconds INT,"
         "  PRIMARY KEY (raceId, driverId, stop),"
         "  FOREIGN KEY (raceId) REFERENCES races(raceId),"
         "  FOREIGN KEY (driverId) REFERENCES drivers(driverId)"

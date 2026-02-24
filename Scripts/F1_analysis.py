@@ -50,7 +50,7 @@ def connect() -> MySQLConnectionAbstract | PooledMySQLConnection:
 
 
 # TODO: Make query
-# 1. What team has the fastest average pit stop?
+# 1. What team has the fastest average pit lane time?
 def fastest_average_pit_stop(
     db: MySQLConnectionAbstract | PooledMySQLConnection,
 ):  # Jonathan
