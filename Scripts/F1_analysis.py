@@ -49,17 +49,25 @@ def connect() -> MySQLConnectionAbstract | PooledMySQLConnection:
     return db
 
 
-# TODO: Make query
-# 1. What team has the fastest average pit lane time?
+# INFO: 1. What team has the fastest average pit lane time?
 def fastest_average_pit_stop(
     db: MySQLConnectionAbstract | PooledMySQLConnection,
 ):  # Jonathan
-    sql = ""
+    # -- Excludes stops longer than 50 seconds
+    sql = """SELECT constructors.name, AVG(pit_stops.milliseconds)/1000 AS average_pit_time_s
+    FROM pit_stops
+    JOIN results ON pit_stops.raceId = results.raceId
+    AND pit_stops.driverId = results.driverId
+    JOIN constructors ON results.constructorId = constructors.constructorId
+    where pit_stops.milliseconds < 50000
+    GROUP BY constructors.name
+    ORDER BY average_pit_time_s ASC
+    LIMIT 1;"""
     response = execute_fetch_one(db, sql)
-    print(response)
+    print(response)  # WARNING: fix a better printout
 
 
-# 2. What team has won the most races between year x and y
+# INFO: 2. What team has won the most races between year x and y
 def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jonathan
     year1 = None
     year2 = None
@@ -82,7 +90,7 @@ def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jona
     ORDER BY TotalWins DESC
     LIMIT 1"""
     response = execute_fetch_one(db, sql)
-    print(response)  # TODO: fix a better printout
+    print(response)  # WARNING: fix a better printout
 
 
 # TODO: Make query
