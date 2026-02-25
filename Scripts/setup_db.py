@@ -276,9 +276,67 @@ def test_connection():
 
     # 5
     insert_csv_data(cursor, F1_DB)
+    
 
     # 6
-    F1_DB.commit()
+    #Create the function and stored procedure
+    cursor.execute("DROP FUNCTION IF EXISTS ACCUMULATED_POINTS;") 
+    cursor.execute(""" 
+    DELIMITER //
+
+    CREATE FUNCTION ACCUMULATED_POINTS(p_team VARCHAR(255), p_year INT)
+    RETURNS INT DETERMINISTIC
+    BEGIN
+        DECLARE total_sum INT;
+        DECLARE team_id INT;
+        SET team_id = (SELECT constructorId FROM constructors WHERE p_team = name LIMIT 1);
+        IF team_id IS NULL OR p_year NOT IN (SELECT races.year FROM races) THEN
+            RETURN -1;
+        END IF;
+        SELECT IFNULL(SUM(results.points),0)
+        INTO total_sum
+        FROM results
+        JOIN races ON races.raceId = results.raceId AND races.year = p_year
+        WHERE results.constructorId = team_id;
+        
+        RETURN total_sum;
+        
+    END //
+    DELIMITER ;""")
+
+    cursor.execute("DROP PROCEDURE IF EXISTS ADD_LAPTIME;")
+
+    cursor.execute("""DELIMITER //
+    CREATE PROCEDURE ADD_LAPTIME (
+    IN raceName VARCHAR(255), 
+    IN raceDate VARCHAR(255),
+    IN driverFName VARCHAR(255),
+    IN driverLName VARCHAR(255),
+    IN p_lap INT, 
+    IN p_position INT,
+    IN p_time VARCHAR(255),
+    IN p_milliseconds INT, 
+    OUT success INT
+    )
+        BEGIN
+            DECLARE v_raceId INT;
+            DECLARE v_driverId INT;
+            
+            SET v_driverId = (SELECT drivers.driverId FROM drivers WHERE drivers.forename = driverFName AND drivers.surname = driverLName LIMIT 1);
+            SET v_raceId = (SELECT races.raceId FROM races WHERE races.name = raceName AND races.date = raceDate LIMIT 1);
+            IF v_driverId IS NULL OR v_raceId IS NULL THEN
+                SET success = -1;
+            ELSE
+                INSERT IGNORE lap_times (raceId,driverId,lap,position,time,milliseconds) -- IGNORE ensures so that no dublicates of the same lap is entered.
+                VALUES (v_raceId, v_driverId, p_lap, p_position,p_time,p_milliseconds);
+                SET success = 0;
+            END IF;
+            
+        END //
+    DELIMITER ;""")
+    
+    # 7
+    F1_DB.commit() 
     cursor.close()
     F1_DB.close()
     print("All done!")
