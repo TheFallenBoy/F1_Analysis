@@ -1,9 +1,7 @@
 import os
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import mysql.connector
-import numpy as np
 from dotenv import load_dotenv
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
@@ -116,28 +114,41 @@ def most_wins_driver(db: MySQLConnectionAbstract | PooledMySQLConnection):  # El
         print(f"{racer[1]} {racer[2]}, wins: {racer[3]} DriverId: {racer[0]}")
 
 
-# INFO: 4. How have the pit lane time decrease over the years? (open up a diagram showing a graph.)
+# INFO: 4. How have the average pit lane time changed over the years? (open up a diagram showing a graph.)
 def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jonathan
-    sql = """SELECT races.date, pit_stops.milliseconds
+    sql = """SELECT 
+    YEAR(races.date) as year, 
+    AVG(pit_stops.milliseconds)/1000 as avg_time_sec,
+    MIN(pit_stops.milliseconds)/1000 as min_time_sec
     FROM pit_stops
     JOIN races ON races.raceId = pit_stops.raceId
     WHERE pit_stops.milliseconds < 50000
-    ORDER BY races.date asc"""
+    GROUP BY YEAR(races.date)
+    ORDER BY year ASC"""
     response = execute_fetch_all(db, sql)
     if response is None:
         print("No results found.")
         return
-
-    date = []
-    time_ms = []
+    years = []
+    avg_times = []
+    min_times = []
     for pit_LaneInfo in response:
-        date.append(pit_LaneInfo[0])
-        time_ms.append(pit_LaneInfo[1])
-    plt.plot(date, time_ms)
-    plt.xlabel("Date")
-    plt.ylabel("Time (ms)")
-    plt.title("Time in pit stop lane over time")
-    plt.show()  # WARNING: Fix display
+        years.append(pit_LaneInfo[0])
+        avg_times.append(pit_LaneInfo[1])
+        min_times.append(pit_LaneInfo[2])
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(years, avg_times, label="Average Pit Stop")
+    plt.plot(years, min_times, label="Fastest Pit Stop")
+
+    plt.xlabel("Year")
+    plt.ylabel("Time (Seconds)")
+    plt.title("F1 pit lane times over the Years")
+    plt.legend()
+    plt.grid(True, linestyle="--", alpha=0.7)
+    plt.savefig("Plot.png")
+    plt.close()
+    print("Plot saved as Plot.png")
 
 
 # TODO: Make query
