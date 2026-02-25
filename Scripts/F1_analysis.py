@@ -1,3 +1,4 @@
+from ast import While
 import os
 
 import matplotlib.pyplot as plt
@@ -24,7 +25,7 @@ def main():
     while True:
         os.system("clear")  # need to be able to run on windows as well, right now it's only available on Linux
         print(
-            """Please enter a number:\n1. What constructor has the fastest average pit stop (2011 - 2024)?\n2. What constructor has won the most races between year x and y? \n3. Top 5 drivers (most won races)\n4. Pit lane time over the years 2011 - 2024\n5.\n6.\n0. Exit\n"""
+            """Please enter a number:\n1. What constructor has the fastest average pit stop (2011 - 2024)?\n2. What constructor has won the most races between year x and y? \n3. Top 5 drivers (most won races)\n4. Pit lane time over the years 2011 - 2024\n5. Add a new lap time\n6. How much points did a team accumulate during a given year?\n0. Exit\n"""
         )
         choice = input()
         if choice.isnumeric() and int(choice) == 0:
@@ -181,9 +182,24 @@ def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
 
 # TODO: Make query
 def total_championship_points(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
-    sql = ""
-    response = execute_fetch_one(db, sql)
-    print(response)  # WARNING: Fix printout
+    team_name = input("Team Name: ")
+    year = input("Year: ")
+    try:
+        sql = f"SELECT ACCUMULATED_POINTS('{team_name}','{year}') LIMIT 1;"
+        response = execute_fetch_all(db, sql)
+    except DatabaseError as e:
+        print(f"Try again... \n[ERROR] {e.msg}")
+        return
+
+    if response == None:
+        print("Invalid Input")
+        return
+
+    if response[0][0] == -1:
+        print("Team or Year does not exist in Database, try again...")
+        return
+
+    print(f"{team_name} accumulated {response[0][0]} points in {year}")  # WARNING: Fix printout
 
 
 def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str) -> tuple | None:
@@ -192,15 +208,18 @@ def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query
     return cursor.fetchall()  # type: ignore
 
 
+
 def execute_fetch_one(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str) -> tuple | None:
     cursor = db.cursor()
     cursor.execute(query)
     return cursor.fetchone()  # type: ignore
 
+
 def call_procedure(db : MySQLConnectionAbstract|PooledMySQLConnection, name : str, args : tuple) -> tuple | None: 
     cursor = db.cursor()
     response = cursor.callproc(name,args)
     return response
+
 
 if __name__ == "__main__":
     main()
