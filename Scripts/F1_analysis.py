@@ -34,7 +34,7 @@ def main():
             choices[choice](db)
         else:
             print("Invalid input")
-        print("Press Enter to continue")
+        print("\nPress Enter to continue...")
         input()
 
 
@@ -72,7 +72,7 @@ def fastest_average_pit_stop(db: MySQLConnectionAbstract | PooledMySQLConnection
 def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jonathan
     year1 = None
     year2 = None
-    while True:
+    while True:  # WARNING: Need better error handling
         year1 = input("From: ")
         year2 = input("To: ")
         if not year1.isnumeric() or not year2.isnumeric():
@@ -112,7 +112,8 @@ def most_wins_driver(db: MySQLConnectionAbstract | PooledMySQLConnection):  # El
     if response is None:
         print("No results found.")
         return
-    print(response)  # WARNING: Fix printout
+    for racer in response:
+        print(f"{racer[1]} {racer[2]}, wins: {racer[3]} DriverId: {racer[0]}")
 
 
 # INFO: 4. How have the pit lane time decrease over the years? (open up a diagram showing a graph.)
@@ -123,7 +124,20 @@ def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # J
     WHERE pit_stops.milliseconds < 50000
     ORDER BY races.date asc"""
     response = execute_fetch_all(db, sql)
-    # TODO: unpack tuple and make graph
+    if response is None:
+        print("No results found.")
+        return
+
+    date = []
+    time_ms = []
+    for pit_LaneInfo in response:
+        date.append(pit_LaneInfo[0])
+        time_ms.append(pit_LaneInfo[1])
+    plt.plot(date, time_ms)
+    plt.xlabel("Date")
+    plt.ylabel("Time (ms)")
+    plt.title("Time in pit stop lane over time")
+    plt.show()  # WARNING: Fix display
 
 
 # TODO: Make query
@@ -140,10 +154,10 @@ def total_championship_points(db: MySQLConnectionAbstract | PooledMySQLConnectio
     print(response)  # WARNING: Fix printout
 
 
-def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str):
+def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str) -> tuple | None:
     cursor = db.cursor()
     cursor.execute(query)
-    return cursor.fetchall()
+    return cursor.fetchall()  # type: ignore
 
 
 def execute_fetch_one(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str) -> tuple | None:
