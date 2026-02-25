@@ -1,10 +1,12 @@
 import os
 
+from typing import Any
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import mysql.connector
 import numpy as np
 from dotenv import load_dotenv
+from mysql.connector import DatabaseError
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
 
@@ -142,9 +144,29 @@ def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # J
 
 # TODO: Make query
 def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
-    sql = ""
-    response = execute_fetch_one(db, sql)
-    print(response)  # WARNING: Fix printout
+    r_name = input("Race Name: ")
+    r_date = input("Race Date: ")
+    d_fname = input("Drivers First Name: ")
+    d_lname = input("Drivers Last Name: ")
+    lap = input("Lap nr: ")
+    position = input("Postition of the driver: ")
+    time = input("Lap time: ")
+    milliseconds = input("milliseconds of the lap: ")
+    response = None
+
+    try:
+        response = call_procedure(db, "ADD_LAPTIME", args=(r_name,r_date,d_fname,d_lname,lap,position, time, milliseconds,response))
+        db.commit()
+    except DatabaseError as e:
+        print(f"Invalid action... \n [ERROR] {e.msg}")
+
+    if response == None or response[8] == -1:
+        print("Could not add lap time... Probably data not in database")
+        return
+
+    print(f"Successfully added {response[2]} {response[3]} new lap time")
+    
+    # WARNING: Fix printout
 
 
 # TODO: Make query
@@ -165,6 +187,10 @@ def execute_fetch_one(db: MySQLConnectionAbstract | PooledMySQLConnection, query
     cursor.execute(query)
     return cursor.fetchone()  # type: ignore
 
+def call_procedure(db : MySQLConnectionAbstract|PooledMySQLConnection, name : str, args : tuple) -> tuple | None: 
+    cursor = db.cursor()
+    response = cursor.callproc(name,args)
+    return response
 
 if __name__ == "__main__":
     main()
