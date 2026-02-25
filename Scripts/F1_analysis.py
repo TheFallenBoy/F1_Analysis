@@ -16,7 +16,7 @@ def main():
         "2": won_most_races,
         "3": most_wins_driver,
         "4": avg_pit_stop_time,
-        "5": add_pit_stop_time,
+        "5": add_lap_time, 
         "6": total_championship_points,
     }
 
@@ -141,7 +141,7 @@ def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # J
 
 
 # TODO: Make query
-def add_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
+def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     sql = ""
     response = execute_fetch_one(db, sql)
     print(response)  # WARNING: Fix printout
