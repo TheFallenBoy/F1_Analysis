@@ -58,17 +58,6 @@ def insert_csv_data(cursor, F1_DB):
             "duration",
             "milliseconds",
         ],
-        "qualifying": [
-            "qualifyId",
-            "raceId",
-            "driverId",
-            "constructorId",
-            "number",
-            "position",
-            "q1",
-            "q2",
-            "q3",
-        ],
         "results": [
             "resultId",
             "raceId",
@@ -91,7 +80,6 @@ def insert_csv_data(cursor, F1_DB):
         "races",  #
         "lap_times",
         "pit_stops",
-        "qualifying",
         "results",  #
     ]
 
@@ -216,23 +204,6 @@ def test_connection():
         "  PRIMARY KEY (raceId, driverId, stop),"
         "  FOREIGN KEY (raceId) REFERENCES races(raceId),"
         "  FOREIGN KEY (driverId) REFERENCES drivers(driverId)"
-        ")"
-    )
-
-    TABLES["qualifying"] = (
-        "CREATE TABLE IF NOT EXISTS qualifying ("
-        "  qualifyId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-        "  raceId INT,"
-        "  driverId INT,"
-        "  constructorId INT,"
-        "  number INT,"
-        "  position INT,"
-        "  q1 VARCHAR(255),"
-        "  q2 VARCHAR(255),"
-        "  q3 VARCHAR(255),"
-        "  FOREIGN KEY (raceId) REFERENCES races(raceId),"
-        "  FOREIGN KEY (driverId) REFERENCES drivers(driverId),"
-        "  FOREIGN KEY (constructorId) REFERENCES constructors(constructorId)"
         ")"
     )
 
