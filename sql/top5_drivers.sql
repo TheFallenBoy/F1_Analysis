@@ -6,7 +6,3 @@ WHERE results.position = 1
 GROUP BY results.driverId
 ORDER BY TotalWins DESC
 LIMIT 5;
-
-
-
-SELECT * FROM results;
