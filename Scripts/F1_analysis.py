@@ -1,4 +1,3 @@
-from ast import While
 import os
 
 import matplotlib.pyplot as plt
@@ -16,7 +15,7 @@ def main():
         "2": won_most_races,
         "3": most_wins_driver,
         "4": avg_pit_stop_time,
-        "5": add_lap_time, 
+        "5": add_lap_time,
         "6": total_championship_points,
     }
 
@@ -166,7 +165,9 @@ def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     response = None
 
     try:
-        response = call_procedure(db, "ADD_LAPTIME", args=(r_name,r_date,d_fname,d_lname,lap,position, time, milliseconds,response))
+        response = call_procedure(
+            db, "ADD_LAPTIME", args=(r_name, r_date, d_fname, d_lname, lap, position, time, milliseconds, response)
+        )
         db.commit()
     except DatabaseError as e:
         print(f"Invalid action... \n [ERROR] {e.msg}")
@@ -176,7 +177,7 @@ def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
         return
 
     print(f"Successfully added {response[2]} {response[3]} new lap time")
-    
+
     # WARNING: Fix printout
 
 
@@ -208,17 +209,16 @@ def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query
     return cursor.fetchall()  # type: ignore
 
 
-
 def execute_fetch_one(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str) -> tuple | None:
     cursor = db.cursor()
     cursor.execute(query)
     return cursor.fetchone()  # type: ignore
 
 
-def call_procedure(db : MySQLConnectionAbstract|PooledMySQLConnection, name : str, args : tuple) -> tuple | None: 
+def call_procedure(db: MySQLConnectionAbstract | PooledMySQLConnection, name: str, args: tuple) -> tuple | None:
     cursor = db.cursor()
-    response = cursor.callproc(name,args)
-    return response
+    response = cursor.callproc(name, args)
+    return response  # type: ignore
 
 
 if __name__ == "__main__":

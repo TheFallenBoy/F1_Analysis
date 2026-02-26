@@ -47,7 +47,6 @@ def insert_csv_data(cursor, F1_DB):
             "nationality",
         ],
         "constructors": ["constructorId", "constructorRef", "name", "nationality"],
-        "status": ["statusId", "status"],
         "races": ["raceId", "year", "round", "circuitId", "name", "date", "time"],
         "lap_times": ["raceId", "driverId", "lap", "position", "time", "milliseconds"],
         "pit_stops": [
@@ -75,7 +74,6 @@ def insert_csv_data(cursor, F1_DB):
             "raceId",
             "driverId",
             "constructorId",
-            "statusId",
             "number",
             "grid",
             "position",
@@ -90,7 +88,6 @@ def insert_csv_data(cursor, F1_DB):
         "circuits",
         "drivers",
         "constructors",
-        "status",  #
         "races",  #
         "lap_times",
         "pit_stops",
@@ -180,13 +177,6 @@ def test_connection():
         ")"
     )
 
-    TABLES["status"] = (
-        "CREATE TABLE IF NOT EXISTS status ("
-        "  statusId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-        "  status VARCHAR(255)"
-        ")"
-    )
-
     TABLES["races"] = (
         "CREATE TABLE IF NOT EXISTS races ("
         "  raceId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
@@ -252,7 +242,6 @@ def test_connection():
         "  raceId INT,"
         "  driverId INT,"
         "  constructorId INT,"
-        "  statusId INT,"
         "  number INT,"
         "  grid INT,"
         "  position INT,"
@@ -262,8 +251,7 @@ def test_connection():
         "  fastestLap VARCHAR(255),"
         "  FOREIGN KEY (raceId) REFERENCES races(raceId),"
         "  FOREIGN KEY (driverId) REFERENCES drivers(driverId),"
-        "  FOREIGN KEY (constructorId) REFERENCES constructors(constructorId),"
-        "  FOREIGN KEY (statusId) REFERENCES status(statusId)"
+        "  FOREIGN KEY (constructorId) REFERENCES constructors(constructorId)"
         ")"
     )
 
@@ -276,11 +264,10 @@ def test_connection():
 
     # 5
     insert_csv_data(cursor, F1_DB)
-    
 
     # 6
-    #Create the function and stored procedure
-    cursor.execute("DROP FUNCTION IF EXISTS ACCUMULATED_POINTS;") 
+    # Create the function and stored procedure
+    cursor.execute("DROP FUNCTION IF EXISTS ACCUMULATED_POINTS;")
     cursor.execute(""" 
     DELIMITER //
 
@@ -334,9 +321,9 @@ def test_connection():
             
         END //
     DELIMITER ;""")
-    
+
     # 7
-    F1_DB.commit() 
+    F1_DB.commit()
     cursor.close()
     F1_DB.close()
     print("All done!")
