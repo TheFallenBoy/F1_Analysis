@@ -1,10 +1,3 @@
-# 1 Ensure connected to server
-# 2 Does DB exist?
-# 3 Create The database
-# 4 Create the tables
-# 5 insert .csv
-# 6 Clean up and print "all done"
-
 import csv
 import os
 
@@ -66,10 +59,10 @@ def insert_csv_data(cursor, F1_DB):
     insertion_order = [
         "drivers",
         "constructors",
-        "races",  #
+        "races",
         "lap_times",
         "pit_stops",
-        "results",  #
+        "results",
     ]
 
     for table in insertion_order:
@@ -100,7 +93,6 @@ def insert_csv_data(cursor, F1_DB):
 
 
 def test_connection():
-    # 1
     F1_DB = mysql.connector.connect(
         host=os.getenv("DB_HOST"),
         port=os.getenv("DB_PORT"),
@@ -110,13 +102,11 @@ def test_connection():
 
     cursor = F1_DB.cursor()
 
-    # 2 & 3
     db_name = os.getenv("DB_NAME")
     cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
     cursor.execute(f"USE {db_name}")
     print(f"Using databese: {db_name}")
 
-    # 4
     TABLES = {}
 
     TABLES["drivers"] = (
@@ -207,10 +197,8 @@ def test_connection():
         except Error as e:
             print(f"Error while creating table: {table_name}: {e}")
 
-    # 5
     insert_csv_data(cursor, F1_DB)
 
-    # 6
     # Create the function and stored procedure
     cursor.execute("DROP FUNCTION IF EXISTS ACCUMULATED_POINTS;")
     cursor.execute(""" 
@@ -267,7 +255,6 @@ def test_connection():
         END //
     DELIMITER ;""")
 
-    # 7
     F1_DB.commit()
     cursor.close()
     F1_DB.close()

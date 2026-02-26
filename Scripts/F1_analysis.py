@@ -50,7 +50,6 @@ def connect() -> MySQLConnectionAbstract | PooledMySQLConnection:
     return db
 
 
-# INFO: 1. What team has the fastest average pit lane time?
 def fastest_average_pit_stop(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jonathan
     sql = """SELECT constructors.name, AVG(pit_stops.milliseconds)/1000 AS average_pit_time_s
     FROM pit_stops
@@ -68,7 +67,6 @@ def fastest_average_pit_stop(db: MySQLConnectionAbstract | PooledMySQLConnection
     print(f"{response[0]} have the best avreage pit lane time with {round(response[1], 2)}s")
 
 
-# INFO: 2. What team has won the most races between year x and y
 def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jonathan
     year1 = None
     year2 = None
@@ -99,7 +97,6 @@ def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jona
     print(f"Amount of wins: {response[1]}")
 
 
-# INFO: 3. Who are the top 5 best drivers in F1?
 def most_wins_driver(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     sql = """SELECT results.driverId, drivers.forename, drivers.surname, COUNT(results.driverId) AS TotalWins
     FROM results
@@ -117,7 +114,6 @@ def most_wins_driver(db: MySQLConnectionAbstract | PooledMySQLConnection):  # El
         print(f"{racer[1]} {racer[2]}, wins: {racer[3]} DriverId: {racer[0]}")
 
 
-# INFO: 4. How have the average pit lane time changed over the years? (open up a diagram showing a graph.)
 def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jonathan
     sql = """SELECT 
     YEAR(races.date) as year, 
@@ -154,7 +150,6 @@ def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # J
     print("Plot saved as Plot.png")
 
 
-# INFO: 5. Add a new record for the lap time in the database. (stored procedure, need to make sure that both Driver and the race is in the database!)
 def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     r_name = input("Race Name: ")
     r_date = input("Race Date: ")
@@ -181,8 +176,6 @@ def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     print(f"Successfully added {response[2]} {response[3]} new lap time")
 
 
-# INFO: 6. Create a function that calculates and returns the total championship points a specific constructor has accumulated during a given racing year.
-# WARNING: display team name
 def total_championship_points(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     team_name = input("Team Name: ")
     year = input("Year: ")
