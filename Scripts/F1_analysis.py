@@ -220,6 +220,8 @@ def call_procedure(db: MySQLConnectionAbstract | PooledMySQLConnection, name: st
     cursor = db.cursor()
     response = cursor.callproc(name, args)
     return response  # type: ignore
+
+
 def print_ascii_art():
     print("""
 
@@ -247,9 +249,9 @@ def print_ascii_art():
 
                         """)
 
-def clear():
-    os.system("cls" if os.name=="nt" else "clear")
 
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 if __name__ == "__main__":
