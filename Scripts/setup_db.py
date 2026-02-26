@@ -26,16 +26,6 @@ def insert_csv_data(cursor, F1_DB):
     data_dir = os.path.join(os.path.dirname(current_dir), "Data")
 
     TABLE_MAP = {
-        "circuits": [
-            "circuitId",
-            "circuitRef",
-            "name",
-            "location",
-            "country",
-            "lat",
-            "lng",
-            "alt",
-        ],
         "drivers": [
             "driverId",
             "driverRef",
@@ -47,8 +37,7 @@ def insert_csv_data(cursor, F1_DB):
             "nationality",
         ],
         "constructors": ["constructorId", "constructorRef", "name", "nationality"],
-        "status": ["statusId", "status"],
-        "races": ["raceId", "year", "round", "circuitId", "name", "date", "time"],
+        "races": ["raceId", "year", "round", "name", "date", "time"],
         "lap_times": ["raceId", "driverId", "lap", "position", "time", "milliseconds"],
         "pit_stops": [
             "raceId",
@@ -59,23 +48,11 @@ def insert_csv_data(cursor, F1_DB):
             "duration",
             "milliseconds",
         ],
-        "qualifying": [
-            "qualifyId",
-            "raceId",
-            "driverId",
-            "constructorId",
-            "number",
-            "position",
-            "q1",
-            "q2",
-            "q3",
-        ],
         "results": [
             "resultId",
             "raceId",
             "driverId",
             "constructorId",
-            "statusId",
             "number",
             "grid",
             "position",
@@ -87,14 +64,11 @@ def insert_csv_data(cursor, F1_DB):
     }
 
     insertion_order = [
-        "circuits",
         "drivers",
         "constructors",
-        "status",  #
         "races",  #
         "lap_times",
         "pit_stops",
-        "qualifying",
         "results",  #
     ]
 
@@ -145,19 +119,6 @@ def test_connection():
     # 4
     TABLES = {}
 
-    TABLES["circuits"] = (
-        "CREATE TABLE IF NOT EXISTS circuits ("
-        "  circuitId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-        "  circuitRef VARCHAR(255),"
-        "  name VARCHAR(255),"
-        "  location VARCHAR(255),"
-        "  country VARCHAR(255),"
-        "  lat FLOAT,"
-        "  lng FLOAT,"
-        "  alt INT"
-        ")"
-    )
-
     TABLES["drivers"] = (
         "CREATE TABLE IF NOT EXISTS drivers ("
         "  driverId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
@@ -180,23 +141,14 @@ def test_connection():
         ")"
     )
 
-    TABLES["status"] = (
-        "CREATE TABLE IF NOT EXISTS status ("
-        "  statusId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-        "  status VARCHAR(255)"
-        ")"
-    )
-
     TABLES["races"] = (
         "CREATE TABLE IF NOT EXISTS races ("
         "  raceId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  year INT,"
         "  round INT,"
-        "  circuitId INT,"
         "  name VARCHAR(255),"
         "  date DATE,"
-        "  time TIME,"
-        "  FOREIGN KEY (circuitId) REFERENCES circuits(circuitId)"
+        "  time TIME"
         ")"
     )
 
@@ -229,30 +181,12 @@ def test_connection():
         ")"
     )
 
-    TABLES["qualifying"] = (
-        "CREATE TABLE IF NOT EXISTS qualifying ("
-        "  qualifyId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-        "  raceId INT,"
-        "  driverId INT,"
-        "  constructorId INT,"
-        "  number INT,"
-        "  position INT,"
-        "  q1 VARCHAR(255),"
-        "  q2 VARCHAR(255),"
-        "  q3 VARCHAR(255),"
-        "  FOREIGN KEY (raceId) REFERENCES races(raceId),"
-        "  FOREIGN KEY (driverId) REFERENCES drivers(driverId),"
-        "  FOREIGN KEY (constructorId) REFERENCES constructors(constructorId)"
-        ")"
-    )
-
     TABLES["results"] = (
         "CREATE TABLE IF NOT EXISTS results ("
         "  resultId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  raceId INT,"
         "  driverId INT,"
         "  constructorId INT,"
-        "  statusId INT,"
         "  number INT,"
         "  grid INT,"
         "  position INT,"
@@ -262,8 +196,7 @@ def test_connection():
         "  fastestLap VARCHAR(255),"
         "  FOREIGN KEY (raceId) REFERENCES races(raceId),"
         "  FOREIGN KEY (driverId) REFERENCES drivers(driverId),"
-        "  FOREIGN KEY (constructorId) REFERENCES constructors(constructorId),"
-        "  FOREIGN KEY (statusId) REFERENCES status(statusId)"
+        "  FOREIGN KEY (constructorId) REFERENCES constructors(constructorId)"
         ")"
     )
 
@@ -276,11 +209,10 @@ def test_connection():
 
     # 5
     insert_csv_data(cursor, F1_DB)
-    
 
     # 6
-    #Create the function and stored procedure
-    cursor.execute("DROP FUNCTION IF EXISTS ACCUMULATED_POINTS;") 
+    # Create the function and stored procedure
+    cursor.execute("DROP FUNCTION IF EXISTS ACCUMULATED_POINTS;")
     cursor.execute(""" 
     DELIMITER //
 
@@ -334,9 +266,9 @@ def test_connection():
             
         END //
     DELIMITER ;""")
-    
+
     # 7
-    F1_DB.commit() 
+    F1_DB.commit()
     cursor.close()
     F1_DB.close()
     print("All done!")

@@ -1,4 +1,3 @@
-from ast import While
 import os
 
 import matplotlib.pyplot as plt
@@ -16,14 +15,14 @@ def main():
         "2": won_most_races,
         "3": most_wins_driver,
         "4": avg_pit_stop_time,
-        "5": add_lap_time, 
+        "5": add_lap_time,
         "6": total_championship_points,
     }
 
     db = connect()
 
     while True:
-        os.system("clear")  # need to be able to run on windows as well, right now it's only available on Linux
+        os.system("clear")  # BUG: Can't run on windows
         print(
             """Please enter a number:\n1. What constructor has the fastest average pit stop (2011 - 2024)?\n2. What constructor has won the most races between year x and y? \n3. Top 5 drivers (most won races)\n4. Pit lane time over the years 2011 - 2024\n5. Add a new lap time\n6. How much points did a team accumulate during a given year?\n0. Exit\n"""
         )
@@ -72,10 +71,11 @@ def fastest_average_pit_stop(db: MySQLConnectionAbstract | PooledMySQLConnection
 def won_most_races(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Jonathan
     year1 = None
     year2 = None
-    while True:  # WARNING: Need better error handling
+    while True:
         year1 = input("From: ")
         year2 = input("To: ")
         if not year1.isnumeric() or not year2.isnumeric():
+            print("Invalid input")
             continue
 
         if int(year1) in range(1950, 2025) and int(year2) in range(1950, 2025):
@@ -153,7 +153,7 @@ def avg_pit_stop_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # J
     print("Plot saved as Plot.png")
 
 
-# TODO: Make query
+# INFO: 5. Add a new record for the lap time in the database. (stored procedure, need to make sure that both Driver and the race is in the database!)
 def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     r_name = input("Race Name: ")
     r_date = input("Race Date: ")
@@ -166,7 +166,9 @@ def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     response = None
 
     try:
-        response = call_procedure(db, "ADD_LAPTIME", args=(r_name,r_date,d_fname,d_lname,lap,position, time, milliseconds,response))
+        response = call_procedure(
+            db, "ADD_LAPTIME", args=(r_name, r_date, d_fname, d_lname, lap, position, time, milliseconds, response)
+        )
         db.commit()
     except DatabaseError as e:
         print(f"Invalid action... \n [ERROR] {e.msg}")
@@ -176,11 +178,10 @@ def add_lap_time(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
         return
 
     print(f"Successfully added {response[2]} {response[3]} new lap time")
-    
-    # WARNING: Fix printout
 
 
-# TODO: Make query
+# INFO: 6. Create a function that calculates and returns the total championship points a specific constructor has accumulated during a given racing year.
+# WARNING: display team name
 def total_championship_points(db: MySQLConnectionAbstract | PooledMySQLConnection):  # Elias
     team_name = input("Team Name: ")
     year = input("Year: ")
@@ -199,7 +200,7 @@ def total_championship_points(db: MySQLConnectionAbstract | PooledMySQLConnectio
         print("Team or Year does not exist in Database, try again...")
         return
 
-    print(f"{team_name} accumulated {response[0][0]} points in {year}")  # WARNING: Fix printout
+    print(f"{team_name} accumulated {response[0][0]} points in {year}")
 
 
 def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str) -> tuple | None:
@@ -208,17 +209,16 @@ def execute_fetch_all(db: MySQLConnectionAbstract | PooledMySQLConnection, query
     return cursor.fetchall()  # type: ignore
 
 
-
 def execute_fetch_one(db: MySQLConnectionAbstract | PooledMySQLConnection, query: str) -> tuple | None:
     cursor = db.cursor()
     cursor.execute(query)
     return cursor.fetchone()  # type: ignore
 
 
-def call_procedure(db : MySQLConnectionAbstract|PooledMySQLConnection, name : str, args : tuple) -> tuple | None: 
+def call_procedure(db: MySQLConnectionAbstract | PooledMySQLConnection, name: str, args: tuple) -> tuple | None:
     cursor = db.cursor()
-    response = cursor.callproc(name,args)
-    return response
+    response = cursor.callproc(name, args)
+    return response  # type: ignore
 
 
 if __name__ == "__main__":
