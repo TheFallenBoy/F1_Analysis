@@ -26,16 +26,6 @@ def insert_csv_data(cursor, F1_DB):
     data_dir = os.path.join(os.path.dirname(current_dir), "Data")
 
     TABLE_MAP = {
-        "circuits": [
-            "circuitId",
-            "circuitRef",
-            "name",
-            "location",
-            "country",
-            "lat",
-            "lng",
-            "alt",
-        ],
         "drivers": [
             "driverId",
             "driverRef",
@@ -47,7 +37,7 @@ def insert_csv_data(cursor, F1_DB):
             "nationality",
         ],
         "constructors": ["constructorId", "constructorRef", "name", "nationality"],
-        "races": ["raceId", "year", "round", "circuitId", "name", "date", "time"],
+        "races": ["raceId", "year", "round", "name", "date", "time"],
         "lap_times": ["raceId", "driverId", "lap", "position", "time", "milliseconds"],
         "pit_stops": [
             "raceId",
@@ -74,7 +64,6 @@ def insert_csv_data(cursor, F1_DB):
     }
 
     insertion_order = [
-        "circuits",
         "drivers",
         "constructors",
         "races",  #
@@ -130,19 +119,6 @@ def test_connection():
     # 4
     TABLES = {}
 
-    TABLES["circuits"] = (
-        "CREATE TABLE IF NOT EXISTS circuits ("
-        "  circuitId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-        "  circuitRef VARCHAR(255),"
-        "  name VARCHAR(255),"
-        "  location VARCHAR(255),"
-        "  country VARCHAR(255),"
-        "  lat FLOAT,"
-        "  lng FLOAT,"
-        "  alt INT"
-        ")"
-    )
-
     TABLES["drivers"] = (
         "CREATE TABLE IF NOT EXISTS drivers ("
         "  driverId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
@@ -170,11 +146,9 @@ def test_connection():
         "  raceId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
         "  year INT,"
         "  round INT,"
-        "  circuitId INT,"
         "  name VARCHAR(255),"
         "  date DATE,"
-        "  time TIME,"
-        "  FOREIGN KEY (circuitId) REFERENCES circuits(circuitId)"
+        "  time TIME"
         ")"
     )
 
